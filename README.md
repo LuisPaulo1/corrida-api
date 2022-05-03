@@ -13,7 +13,7 @@
 - O calculo da velocidade média de cada super-herói durante toda a corrida
 
 ## Collection do Postman para corrida-api
-Importar o link no Postman: https://github.com/LuisPaulo1/corrida-api.git
+Importar o link no Postman: https://www.getpostman.com/collections/435b70885c41d5ad65b3
 
 ## Como executar corrida-api
 ### Pré-requisitos
