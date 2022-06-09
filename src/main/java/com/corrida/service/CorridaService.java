@@ -22,7 +22,7 @@ import com.corrida.service.expection.NegocioException;
 @Service
 public class CorridaService {
 	
-	private DateTimeFormatter  formatterTempoVolta = new DateTimeFormatterBuilder()
+	private DateTimeFormatter  formatarTempoDaVolta = new DateTimeFormatterBuilder()
 			.appendPattern("m:ss.SSS")
 			.parseDefaulting(ChronoField.HOUR_OF_DAY, 0)				
 			.toFormatter();
@@ -42,7 +42,7 @@ public class CorridaService {
 				LocalTime hora = LocalTime.from(formatterHora.parse(sf[0]));				
 				String nomeSuperHeroi = sf[1];
 				Integer numeroVolta = Integer.parseInt(sf[2]);				
-				LocalTime tempoDeVolta = LocalTime.parse(sf[3], formatterTempoVolta);	
+				LocalTime tempoDeVolta = LocalTime.parse(sf[3], formatarTempoDaVolta);	
 				Double velocidadeMedia = Double.parseDouble(sf[4].replace(",", "."));
 				
 				listaInput.add(new Corrida(hora, nomeSuperHeroi, numeroVolta, tempoDeVolta, velocidadeMedia));
@@ -72,10 +72,10 @@ public class CorridaService {
 			String codigoSuperHeroi = x.getNomeSuperHeroi().substring(0, 3);
 			String nomeSuperHeroi = x.getNomeSuperHeroi().substring(4);
 			Integer QtsVoltasCompletadas = x.getNumeroVolta();
-			String tempoTotalProva = formatterTempoVolta.format(buscarTempoTotalDeProva(x.getNomeSuperHeroi().substring(0, 3), listaInput));	
+			String tempoTotalProva = formatarTempoDaVolta.format(buscarTempoTotalDeProva(x.getNomeSuperHeroi().substring(0, 3), listaInput));	
 			String melhorVoltaDoSuperHeroi = melhorVoltaDoSuperHeroi(x.getNomeSuperHeroi().substring(0, 3), listaInput);
 			String melhorVoltaDaCorrida = melhorVoltaDaCorrida(listaInput).getNomeSuperHeroi().subSequence(0, 3).equals(codigoSuperHeroi) ? 
-					"Tempo: "+ formatterTempoVolta.format(melhorVoltaDaCorrida(listaInput).getTempoDeVolta())+" - "+"Número da volta: "+melhorVoltaDaCorrida(listaInput).getNumeroVolta() : null;  
+					"Tempo: "+ formatarTempoDaVolta.format(melhorVoltaDaCorrida(listaInput).getTempoDeVolta())+" - "+"Número da volta: "+melhorVoltaDaCorrida(listaInput).getNumeroVolta() : null;  
 			String velocidadeMedia = velocidadeMediaDoSuperHeroi(x.getNomeSuperHeroi().substring(0, 3), listaInput);
 			listaResultadoFinal.add(new CorridaResultDto(posicaoChegada, codigoSuperHeroi, nomeSuperHeroi, QtsVoltasCompletadas, tempoTotalProva, melhorVoltaDoSuperHeroi, melhorVoltaDaCorrida, velocidadeMedia));			
 		});
@@ -96,7 +96,7 @@ public class CorridaService {
 				.filter(x -> x.getNomeSuperHeroi().startsWith(codigo))				
 				.min((x, y) -> x.getTempoDeVolta().compareTo(y.getTempoDeVolta()))
 				.get();		
-		String result = "Tempo: "+formatterTempoVolta.format(corrida.getTempoDeVolta())+" - "+"Número da volta: "+ corrida.getNumeroVolta();		
+		String result = "Tempo: "+formatarTempoDaVolta.format(corrida.getTempoDeVolta())+" - "+"Número da volta: "+ corrida.getNumeroVolta();		
 		return result;
 	}
 	
