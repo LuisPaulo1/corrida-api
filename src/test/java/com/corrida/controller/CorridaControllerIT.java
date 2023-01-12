@@ -19,17 +19,16 @@ public class CorridaControllerIT {
 
 	@Autowired
 	private MockMvc mockMvc;
-	
+
 	private String nomeArquivoKey;
 	private String nomeArquivoEmDisco;
 	private String mediaType;
 	private String mediaTypeInvalido;
 	private String conteudoDoArquivo;
 	private String conteudoDoArquivoInvalido;
-	
-	
+
 	@BeforeEach
-	void setUp() throws Exception {	
+	void setUp() throws Exception {
 		nomeArquivoKey = "arquivo";
 		nomeArquivoEmDisco = "corrida.txt";
 		mediaType = MediaType.TEXT_PLAIN_VALUE;
@@ -37,55 +36,54 @@ public class CorridaControllerIT {
 		conteudoDoArquivo = "23:49:08.277;038–Superman;1;1:02.852;44,275";
 		conteudoDoArquivoInvalido = "23:49:08.277;038–Superman;1;1:02.852;44,2--75";
 	}
-	
+
 	@Test
 	public void lerArquivoTextoDeveriaRetornarStatusOkQuandoArquivoForValido() throws Exception {
-		
+
 		MockMultipartFile arquivoTexto = new MockMultipartFile(nomeArquivoKey, nomeArquivoEmDisco, mediaType, conteudoDoArquivo.getBytes());
-		
+
 		ResultActions result =
-				mockMvc.perform(multipart("/corridas")						
-						.file(arquivoTexto));
-				
-				result.andExpect(status().isOk());	
+			mockMvc.perform(multipart("/corridas")
+				.file(arquivoTexto));
+
+		result.andExpect(status().isOk());
 	}
-	
-	@Test
-	public void lerArquivoTextoDeveriaRetornarStatusBadRequestQuandoTipoDeArquivoForInvalido() throws Exception {
-		
-		MockMultipartFile arquivoTexto = new MockMultipartFile(nomeArquivoKey, nomeArquivoEmDisco, mediaTypeInvalido, conteudoDoArquivo.getBytes());
-		
-		ResultActions result =
-				mockMvc.perform(multipart("/corridas")						
-						.file(arquivoTexto));
-				
-				result.andExpect(status().isBadRequest());
-	}
-	
+
 	@Test
 	public void lerArquivoTextoDeveriaRetornarStatusBadRequestQuandoConteudoDoArquivoForInvalido() throws Exception {
-		
+
 		MockMultipartFile arquivoTexto = new MockMultipartFile(nomeArquivoKey, nomeArquivoEmDisco, mediaType, conteudoDoArquivoInvalido.getBytes());
-		
+
 		ResultActions result =
-				mockMvc.perform(multipart("/corridas")						
-						.file(arquivoTexto));
-				
-				result.andExpect(status().isBadRequest());	
+			mockMvc.perform(multipart("/corridas")
+				.file(arquivoTexto));
+
+		result.andExpect(status().isBadRequest());
 	}
-	
+
+	@Test
+	public void lerArquivoTextoDeveriaRetornarStatusBadRequestQuandoMediaTypeForInvalido() throws Exception {
+
+		MockMultipartFile arquivoTexto = new MockMultipartFile(nomeArquivoKey, nomeArquivoEmDisco, mediaTypeInvalido, conteudoDoArquivo.getBytes());
+
+		ResultActions result =
+			mockMvc.perform(multipart("/corridas")
+				.file(arquivoTexto));
+
+		result.andExpect(status().isBadRequest());
+	}
+
 	@Test
 	public void lerArquivoTextoDeveriaRetornarStatusUnsupportedMediaTypeQuandoContentTypeNaoForMultipartForm() throws Exception {
-		
+
 		MockMultipartFile arquivoTexto = new MockMultipartFile(nomeArquivoKey, nomeArquivoEmDisco, mediaType, conteudoDoArquivo.getBytes());
-		
+
 		ResultActions result =
-				mockMvc.perform(multipart("/corridas")
-						.file(arquivoTexto)
-						.contentType(MediaType.APPLICATION_JSON_VALUE));
-				
-				result.andExpect(status().isUnsupportedMediaType());	
+			mockMvc.perform(multipart("/corridas")
+				.file(arquivoTexto)
+				.contentType(MediaType.APPLICATION_JSON_VALUE));
+
+		result.andExpect(status().isUnsupportedMediaType());
 	}
-	
-	
+
 }

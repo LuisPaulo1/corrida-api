@@ -1,4 +1,5 @@
 package com.corrida.controller.exception;
+
 import java.io.Serializable;
 import java.time.Instant;
 
@@ -15,5 +16,5 @@ public class StandardError implements Serializable {
 	private String error;
 	private String message;
 	private String path;
-	
+
 }

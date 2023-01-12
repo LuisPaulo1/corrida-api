@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import com.corrida.controller.dto.CorridaInputDto;
 import com.corrida.controller.dto.CorridaResultDto;
 import com.corrida.model.Corrida;
-import com.corrida.service.expection.NegocioException;
+import com.corrida.service.expection.ReadFileException;
 
 @Service
 public class CorridaService {
@@ -54,7 +54,7 @@ public class CorridaService {
 		return listaResult;
 		
 		} catch (Exception e) {
-			throw new NegocioException("Erro durante a leitura do arquivo"); 
+			throw new ReadFileException("Erro durante a leitura do arquivo");
 		}		
 	}
 	
