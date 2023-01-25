@@ -10,13 +10,13 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CorridaResultDto {
+public class CorridaResultadoDto {
 	
-	private Integer posicaoChegada;
-	private String codigoSuperHeroi;
-	private String nomeSuperHeroi;
-	private Integer QtsVoltasCompletadas;
-	private String tempoTotalProva;	
+	private Integer posicaoDeChegada;
+	private String codigoDoSuperHeroi;
+	private String nomeDoSuperHeroi;
+	private Integer QuantidadeDeVoltasCompletadas;
+	private String tempoTotalDaProva;
 	private String melhorVoltaDoSuperHeroi;
 	private String melhorVoltaDaCorrida;
 	private String velocidadeMedia;

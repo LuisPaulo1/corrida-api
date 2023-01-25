@@ -2,7 +2,7 @@
 ## Sobre o projeto
 É uma API desenvolvida com Java e Spring Boot que recebe um arquivo de texto como entrada no seu endpoint e executa um algoritmo para ler esse arquivo.
 
-## Algoritmo da corrida-api extrai as seguintes informações do arquivo de texto
+### Algoritmo da corrida-api extrai as seguintes informações do arquivo de texto
 - Posição de chegada de cada Super-herói
 - Código do Super-herói
 - Nome Super-herói
@@ -10,14 +10,19 @@
 - Tempo Total de Prova
 - A melhor volta de cada super-herói. 
 - A melhor volta da corrida
-- O calculo da velocidade média de cada super-herói durante toda a corrida
+- O cálculo da velocidade média de cada super-herói durante toda a corrida
 
-## Collection do Postman para corrida-api
+### Collection do Postman para corrida-api
 Importar o link no Postman: https://www.getpostman.com/collections/435b70885c41d5ad65b3
+
+### Tecnologias utilizadas
+- Java 11
+- Spring (boot, web, validation)
+- Lombok
 
 ## Como executar corrida-api
 ### Pré-requisitos
-Java
+- Java 11
 
 ### Clonar o projeto
 ```bash
@@ -30,7 +35,7 @@ cd corrida-api
 ### Executar um dos comandos
 ./mvnw spring-boot:run ou mvn spring-boot:run ou importar o projeto em uma IDE e executar
 
-### Antes de enviar requisições pelo Postman deve-se criar um arquivo com a extensão .txt contendo o conteúdo abaixo para ser utilizado nas requisições. Ex: corrida.txt
+### Antes de enviar requisições pelo Postman deve-se criar um arquivo com a extensão txt contendo o conteúdo abaixo para ser utilizado nas requisições. Ex: corrida.txt
 ```bash
 Hora;Super-Heroi;Nº Volta;Tempo Volta;Velocidade média da volta
 23:49:08.277;038–Superman;1;1:02.852;44,275 
@@ -61,11 +66,6 @@ Hora;Super-Heroi;Nº Volta;Tempo Volta;Velocidade média da volta
 - A primeira linha do arquivo pode ser desconsiderada (Cabeçalho).
 - O conteúdo do arquivo não deve conter o cabeçalho.
 - A corrida termina quando o primeiro colocado completa 4 voltas.
-
-## Tecnologias utilizadas
-- Java 11
-- Spring (boot, web, validation)
-- Lombok
 
 # Autor
 

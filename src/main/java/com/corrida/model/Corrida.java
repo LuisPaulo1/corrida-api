@@ -13,10 +13,10 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Corrida {
 	
-	private LocalTime hora;
-	private String nomeSuperHeroi;
-	private Integer numeroVolta;
-	private LocalTime tempoDeVolta;
+	private LocalTime horaQueCompletaAVolta;
+	private String nomeDoSuperHeroi;
+	private Integer numeroDeVolta;
+	private LocalTime tempoDaVolta;
 	private Double velocidadeMedia;	
 
 }

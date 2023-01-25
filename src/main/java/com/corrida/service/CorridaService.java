@@ -9,25 +9,27 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.corrida.controller.dto.CorridaInputDto;
-import com.corrida.controller.dto.CorridaResultDto;
+import com.corrida.controller.dto.CorridaResultadoDto;
 import com.corrida.model.Corrida;
 import com.corrida.service.expection.ReadFileException;
 
 @Service
 public class CorridaService {
 	
-	private DateTimeFormatter  formatarTempoDaVolta = new DateTimeFormatterBuilder()
+	private final DateTimeFormatter  formatarTempoDaVolta = new DateTimeFormatterBuilder()
 			.appendPattern("m:ss.SSS")
 			.parseDefaulting(ChronoField.HOUR_OF_DAY, 0)				
 			.toFormatter();
 	
-	public List<CorridaResultDto> lerArquivo(CorridaInputDto corridaInputDto) {
+	public List<CorridaResultadoDto> lerArquivo(CorridaInputDto corridaInputDto) {
 				
 		try {
 			InputStream inputStream = corridaInputDto.getArquivo().getInputStream();
@@ -35,82 +37,84 @@ public class CorridaService {
 			BufferedReader br = new BufferedReader(reader);
 			DateTimeFormatter formatterHora = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");			
 			
-			List<Corrida> listaInput = new ArrayList<>();
+			List<Corrida> listaDeParticipantesDaCorrida = new ArrayList<>();
 			String linha = br.readLine();
-			while(linha != null) {				
+			while(linha != null) {
 				String[] sf = linha.split(";");				
-				LocalTime hora = LocalTime.from(formatterHora.parse(sf[0]));				
-				String nomeSuperHeroi = sf[1];
-				Integer numeroVolta = Integer.parseInt(sf[2]);				
-				LocalTime tempoDeVolta = LocalTime.parse(sf[3], formatarTempoDaVolta);	
+				LocalTime horaQueCompletaAVolta = LocalTime.from(formatterHora.parse(sf[0]));
+				String nomeDoSuperHeroi = sf[1];
+				Integer numeroDeVolta = Integer.parseInt(sf[2]);
+				LocalTime tempoDaVolta = LocalTime.parse(sf[3], formatarTempoDaVolta);
 				Double velocidadeMedia = Double.parseDouble(sf[4].replace(",", "."));
 				
-				listaInput.add(new Corrida(hora, nomeSuperHeroi, numeroVolta, tempoDeVolta, velocidadeMedia));
+				listaDeParticipantesDaCorrida.add(new Corrida(horaQueCompletaAVolta, nomeDoSuperHeroi, numeroDeVolta, tempoDaVolta, velocidadeMedia));
 				linha = br.readLine();
 			}
-			
-			List<CorridaResultDto> listaResult = calcularEstatisticasCorrida(listaInput);
-		
-		return listaResult;
+
+			return calcularEstatisticaDaCorrida(listaDeParticipantesDaCorrida);
 		
 		} catch (Exception e) {
 			throw new ReadFileException("Erro durante a leitura do arquivo");
 		}		
 	}
 	
-	private List<CorridaResultDto> calcularEstatisticasCorrida(List<Corrida> listaInput) {
+	private List<CorridaResultadoDto> calcularEstatisticaDaCorrida(List<Corrida> listaDeParticipantesDaCorrida) {
 				
-		List<Corrida> listaClassificacao = listaInput.stream()
-				 .filter(x -> x.getNumeroVolta() == 4 || (x.getNumeroVolta() == 3 && x.getNomeSuperHeroi().startsWith("011")))
-				 .sorted((x, y) -> x.getHora().compareTo(y.getHora()))
+		List<Corrida> listaDeClassificados = listaDeParticipantesDaCorrida.stream()
+				 .filter(x -> x.getNumeroDeVolta() == 4 || (x.getNumeroDeVolta() == 3 && x.getNomeDoSuperHeroi().startsWith("011")))
+				 .sorted(Comparator.comparing(Corrida::getHoraQueCompletaAVolta))
 				 .collect(Collectors.toList());
 		
-		List<CorridaResultDto> listaResultadoFinal = new ArrayList<>();
+		List<CorridaResultadoDto> listaResultadoFinal = new ArrayList<>();
 				
-		listaClassificacao.forEach(x -> {
-			int posicaoChegada = listaClassificacao.indexOf(x) + 1;
-			String codigoSuperHeroi = x.getNomeSuperHeroi().substring(0, 3);
-			String nomeSuperHeroi = x.getNomeSuperHeroi().substring(4);
-			Integer QtsVoltasCompletadas = x.getNumeroVolta();
-			String tempoTotalProva = formatarTempoDaVolta.format(buscarTempoTotalDeProva(x.getNomeSuperHeroi().substring(0, 3), listaInput));	
-			String melhorVoltaDoSuperHeroi = melhorVoltaDoSuperHeroi(x.getNomeSuperHeroi().substring(0, 3), listaInput);
-			String melhorVoltaDaCorrida = melhorVoltaDaCorrida(listaInput).getNomeSuperHeroi().subSequence(0, 3).equals(codigoSuperHeroi) ? 
-					"Tempo: "+ formatarTempoDaVolta.format(melhorVoltaDaCorrida(listaInput).getTempoDeVolta())+" - "+"Número da volta: "+melhorVoltaDaCorrida(listaInput).getNumeroVolta() : null;  
-			String velocidadeMedia = velocidadeMediaDoSuperHeroi(x.getNomeSuperHeroi().substring(0, 3), listaInput);
-			listaResultadoFinal.add(new CorridaResultDto(posicaoChegada, codigoSuperHeroi, nomeSuperHeroi, QtsVoltasCompletadas, tempoTotalProva, melhorVoltaDoSuperHeroi, melhorVoltaDaCorrida, velocidadeMedia));			
+		listaDeClassificados.forEach(corrida -> {
+			int posicaoDeChegada = listaDeClassificados.indexOf(corrida) + 1;
+			String codigoDoSuperHeroi = corrida.getNomeDoSuperHeroi().substring(0, 3);
+			String nomeDoSuperHeroi = corrida.getNomeDoSuperHeroi().substring(4);
+			Integer QuantidadeDeVoltasCompletadas = corrida.getNumeroDeVolta();
+			String tempoTotalDaProva = buscarTempoTotalDaProva(codigoDoSuperHeroi, listaDeParticipantesDaCorrida);
+			String melhorVoltaDoSuperHeroi = melhorVoltaDoSuperHeroi(codigoDoSuperHeroi, listaDeParticipantesDaCorrida);
+			String melhorVoltaDaCorrida = melhorVoltaDaCorrida(codigoDoSuperHeroi, listaDeParticipantesDaCorrida);
+			String velocidadeMedia = velocidadeMediaDoSuperHeroi(codigoDoSuperHeroi, listaDeParticipantesDaCorrida);
+			listaResultadoFinal.add(new CorridaResultadoDto(posicaoDeChegada, codigoDoSuperHeroi, nomeDoSuperHeroi, QuantidadeDeVoltasCompletadas, tempoTotalDaProva, melhorVoltaDoSuperHeroi, melhorVoltaDaCorrida, velocidadeMedia));
 		});
 		 
 		return listaResultadoFinal;
 	}
 	
-	private LocalTime buscarTempoTotalDeProva(String codigo, List<Corrida> listaInput) {
-		LocalTime tempo = listaInput.stream()
-				.filter(x -> x.getNomeSuperHeroi().startsWith(codigo))
-				.map(x -> x.getTempoDeVolta())				
+	private String buscarTempoTotalDaProva(String codigoSuperHeroi, List<Corrida> listaDeParticipantesDaCorrida) {
+		LocalTime tempoTotalDaProva = listaDeParticipantesDaCorrida.stream()
+				.filter(x -> x.getNomeDoSuperHeroi().startsWith(codigoSuperHeroi))
+				.map(Corrida::getTempoDaVolta)
 				.reduce(LocalTime.of(0, 0, 0, 0), (x , y) -> x.plusHours(y.getHour()).plusMinutes(y.getMinute()).plusSeconds(y.getSecond()).plusNanos(y.getNano()));		
-		return tempo;
+		return formatarTempoDaVolta.format(tempoTotalDaProva);
 	}
 	
-	private String melhorVoltaDoSuperHeroi(String codigo, List<Corrida> listaInput) {
-		Corrida corrida = listaInput.stream()
-				.filter(x -> x.getNomeSuperHeroi().startsWith(codigo))				
-				.min((x, y) -> x.getTempoDeVolta().compareTo(y.getTempoDeVolta()))
-				.get();		
-		String result = "Tempo: "+formatarTempoDaVolta.format(corrida.getTempoDeVolta())+" - "+"Número da volta: "+ corrida.getNumeroVolta();		
-		return result;
+	private String melhorVoltaDoSuperHeroi(String codigoSuperHeroi, List<Corrida> listaDeParticipantesDaCorrida) {
+		Optional<Corrida> corrida = listaDeParticipantesDaCorrida.stream()
+				.filter(x -> x.getNomeDoSuperHeroi().startsWith(codigoSuperHeroi))
+				.min(Comparator.comparing(Corrida::getTempoDaVolta));
+
+		return corrida.map(value -> "Tempo: " + formatarTempoDaVolta.format(value.getTempoDaVolta()) + " - " + "Número da volta: " + value.getNumeroDeVolta()).orElse(null);
 	}
 	
-	private Corrida melhorVoltaDaCorrida(List<Corrida> listaInput) {				
-		Corrida corrida = listaInput.stream()				
-				.min((x, y) -> x.getTempoDeVolta().compareTo(y.getTempoDeVolta()))
-				.get();		
-		return corrida;
+	private String melhorVoltaDaCorrida(String codigoSuperHeroi, List<Corrida> listaDeParticipantesDaCorrida) {
+		Optional<Corrida> superHeroiComMelhorVoltaNaCorrida = listaDeParticipantesDaCorrida.stream()
+				.min(Comparator.comparing(Corrida::getTempoDaVolta));
+
+		if(superHeroiComMelhorVoltaNaCorrida.isPresent()) {
+			var superHeroi = superHeroiComMelhorVoltaNaCorrida.get();
+			if(superHeroi.getNomeDoSuperHeroi().substring(0, 3).equals(codigoSuperHeroi)){
+				return "Tempo: "+ formatarTempoDaVolta.format(superHeroi.getTempoDaVolta())+" - "+"Número da volta: "+superHeroi.getNumeroDeVolta();
+			}
+		}
+		return null;
 	}
 	
-	private String velocidadeMediaDoSuperHeroi(String codigo, List<Corrida> listaInput) {		
-		Double velocidadeMedia = listaInput.stream()
-				.filter(x -> x.getNomeSuperHeroi().startsWith(codigo))
-				.mapToDouble(x -> x.getVelocidadeMedia())				
+	private String velocidadeMediaDoSuperHeroi(String codigoSuperHeroi, List<Corrida> listaDeParticipantesDaCorrida) {
+		Double velocidadeMedia = listaDeParticipantesDaCorrida.stream()
+				.filter(x -> x.getNomeDoSuperHeroi().startsWith(codigoSuperHeroi))
+				.mapToDouble(Corrida::getVelocidadeMedia)
 				.average().orElse(0.0);		
 		return new DecimalFormat("0.###").format(velocidadeMedia);
 	}
