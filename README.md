@@ -1,6 +1,6 @@
 # corrida-api
 ## Sobre o projeto
-É uma API desenvolvida com Java e Spring Boot que recebe um arquivo de texto como entrada no seu endpoint e executa um algoritmo para ler esse arquivo.
+É uma API desenvolvida com Java e Spring Boot que recebe um arquivo de texto como entrada e executa um algoritmo para ler o conteúdo do arquivo.
 
 ### Algoritmo da corrida-api extrai as seguintes informações do arquivo de texto
 - Posição de chegada de cada Super-herói
@@ -24,18 +24,19 @@ Importar o link no Postman: https://www.getpostman.com/collections/435b70885c41d
 ### Pré-requisitos
 - Java 11
 
+```bash
 ### Clonar o projeto
-```bash
 git clone https://github.com/LuisPaulo1/corrida-api.git
-```
-### Entrar na pasta do projeto corrida-api
-```bash
-cd corrida-api
-```
-### Executar um dos comandos
-./mvnw spring-boot:run ou mvn spring-boot:run ou importar o projeto em uma IDE e executar
 
-### Antes de enviar requisições pelo Postman deve-se criar um arquivo com a extensão txt contendo o conteúdo abaixo para ser utilizado nas requisições. Ex: corrida.txt
+### Entrar na pasta do projeto corrida-api
+cd corrida-api
+
+### Executar
+./mvnw spring-boot:run
+```
+
+### Para utilizar a API é necessário criar um arquivo com a extensão txt contendo o conteúdo abaixo para ser utilizado nas requisições. Ex: corrida.txt
+
 ```bash
 Hora;Super-Heroi;Nº Volta;Tempo Volta;Velocidade média da volta
 23:49:08.277;038–Superman;1;1:02.852;44,275 
